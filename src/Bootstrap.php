@@ -21,7 +21,7 @@ class Bootstrap
     /**
      * @var string[]
      */
-    private $kernel = [];
+    private $mods = [];
 
     /**
      * Bootstrap constructor.
@@ -41,12 +41,20 @@ class Bootstrap
     }
 
     /**
-     * set or booting kernel mods
+     * setting kernel mods
      * @param string ...$mods
      */
-    public function kernel(string ...$mods) : void
+    public function register(string ...$mods) : void
     {
-        $mods ? $this->kernel = $mods : $this->loading(...$this->kernel);
+        $this->mods = array_unique(array_merge($this->mods, $mods));
+    }
+
+    /**
+     * booting kernel mods
+     */
+    public function kernel() : void
+    {
+        $this->loading(...$this->mods);
     }
 
     /**

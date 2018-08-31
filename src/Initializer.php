@@ -48,9 +48,9 @@ class Initializer
      * @param string ...$mods
      * @return static
      */
-    public function initial(string ...$mods) : self
+    public function bootstrap(string ...$mods) : self
     {
-        $this->boot->kernel(...$mods);
+        $this->boot->register(...$mods);
         return $this;
     }
 
