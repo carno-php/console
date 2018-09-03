@@ -11,6 +11,11 @@ namespace Carno\Console\Contracts;
 interface Bootable
 {
     /**
+     * @return int
+     */
+    public function priority() : int;
+
+    /**
      * @return bool
      */
     public function runnable() : bool;

@@ -45,6 +45,19 @@ class Initializer
     }
 
     /**
+     * @return static
+     */
+    public function additions() : self
+    {
+        foreach (get_defined_constants(true)['user'] ?? [] as $name => $value) {
+            if (substr($name, 5, 12) === '_COMPONENTS_') {
+                $this->bootstrap(...$value);
+            }
+        }
+        return $this;
+    }
+
+    /**
      * @param string ...$mods
      * @return static
      */

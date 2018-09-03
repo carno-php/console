@@ -62,10 +62,28 @@ class Bootstrap
      */
     public function loading(string ...$mods) : void
     {
-        array_walk($mods, function (string $mod) {
-            if (($com = DI::object($mod)) && $com instanceof Bootable && $com->runnable()) {
-                $com->starting($this->app);
-            }
+        /**
+         * @var Bootable[] $coms
+         */
+
+        $coms = [];
+
+        foreach ($mods as $mod) {
+            $com = DI::object($mod);
+            $com instanceof Bootable && $coms[] = $com;
+        }
+
+        usort($coms, static function (Bootable $com1, Bootable $com2) {
+            return $com1->priority() <=> $com2->priority();
         });
+
+        foreach ($coms as $com) {
+            if ($com->runnable()) {
+                $com->starting($this->app);
+                logger('console')->debug('Component starting', ['com' => get_class($com)]);
+            } else {
+                logger('console')->debug('Component non-runnable', ['com' => get_class($com)]);
+            }
+        }
     }
 }
