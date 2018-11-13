@@ -37,17 +37,15 @@ class Initializer
     {
         DI::set(Bootstrap::class, $this->boot = DI::object(Bootstrap::class));
 
-        $this->app = new Application;
-
-        $this->app->setCatchExceptions(false);
-
-        $this->addCommand(...$this->provides());
+        ($this->app = new Application)
+            ->setCatchExceptions(false)
+        ;
     }
 
     /**
      * @return static
      */
-    public function additions() : self
+    public function components() : self
     {
         foreach (get_defined_constants(true)['user'] ?? [] as $name => $value) {
             if (substr($name, 5, 12) === '_COMPONENTS_') {
@@ -64,6 +62,15 @@ class Initializer
     public function bootstrap(string ...$mods) : self
     {
         $this->boot->register(...$mods);
+        return $this;
+    }
+
+    /**
+     * @return static
+     */
+    public function additions() : self
+    {
+        $this->addCommand(...$this->provides());
         return $this;
     }
 
