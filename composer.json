@@ -14,6 +14,11 @@
       "Carno\\Console\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Carno\\Console\\Tests\\": "tests"
+    }
+  },
   "minimum-stability": "dev",
   "extra": {
     "branch-alias": {

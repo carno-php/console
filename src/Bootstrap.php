@@ -8,11 +8,14 @@
 
 namespace Carno\Console;
 
+use Carno\Console\Chips\LDKit;
 use Carno\Console\Contracts\Bootable;
 use Carno\Container\DI;
 
 class Bootstrap
 {
+    use LDKit;
+
     /**
      * @var App
      */
@@ -21,7 +24,7 @@ class Bootstrap
     /**
      * @var string[]
      */
-    private $mods = [];
+    private $kms = [];
 
     /**
      * Bootstrap constructor.
@@ -46,7 +49,7 @@ class Bootstrap
      */
     public function register(string ...$mods) : void
     {
-        $this->mods = array_unique(array_merge($this->mods, $mods));
+        $this->kms = array_unique(array_merge($this->kms, $mods));
     }
 
     /**
@@ -54,7 +57,7 @@ class Bootstrap
      */
     public function kernel() : void
     {
-        $this->loading(...$this->mods);
+        $this->loading(...$this->kms);
     }
 
     /**
@@ -63,27 +66,15 @@ class Bootstrap
     public function loading(string ...$mods) : void
     {
         /**
-         * @var Bootable[] $coms
+         * @var Bootable[] $boots
          */
 
-        $coms = [];
+        $boots = [];
 
         foreach ($mods as $mod) {
-            $com = DI::object($mod);
-            $com instanceof Bootable && $coms[] = $com;
+            ($com = DI::object($mod)) instanceof Bootable && $boots[] = $com;
         }
 
-        usort($coms, static function (Bootable $com1, Bootable $com2) {
-            return $com1->priority() <=> $com2->priority();
-        });
-
-        foreach ($coms as $com) {
-            if ($com->runnable()) {
-                $com->starting($this->app);
-                logger('console')->debug('Component starting', ['com' => get_class($com)]);
-            } else {
-                logger('console')->debug('Component non-runnable', ['com' => get_class($com)]);
-            }
-        }
+        $this->booting($this->app, ...$boots);
     }
 }

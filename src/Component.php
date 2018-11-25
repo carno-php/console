@@ -14,6 +14,11 @@ use Carno\Container\DI;
 abstract class Component implements Bootable
 {
     /**
+     * @var float
+     */
+    private $ordered = .0;
+
+    /**
      * @var int
      */
     protected $priority = 50;
@@ -29,11 +34,19 @@ abstract class Component implements Bootable
     protected $dependencies = [];
 
     /**
-     * @return int
+     * @param float $position
      */
-    public function priority() : int
+    public function ordered(float $position) : void
     {
-        return $this->priority;
+        $this->ordered = $position / 1000;
+    }
+
+    /**
+     * @return float
+     */
+    public function priority() : float
+    {
+        return $this->priority + $this->ordered;
     }
 
     /**
