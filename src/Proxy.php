@@ -71,7 +71,7 @@ class Proxy extends Command
      */
     public function getCommand() : Programme
     {
-        return $this->ref ?? $this->ref = new $this->target;
+        return $this->ref ?? $this->ref = DI::object($this->target);
     }
 
     /**
@@ -84,11 +84,7 @@ class Proxy extends Command
         $this->bootstrap->kernel();
 
         async(function () {
-            /**
-             * @var Programme $command
-             */
-            $command = DI::object($this->target);
-            yield $command->execute($this->bootstrap);
+            yield $this->getCommand()->execute($this->bootstrap);
         })->catch(function (Throwable $e) {
             dump('APP EXCEPTION', $e);
             $this->exits();

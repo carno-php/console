@@ -15,11 +15,26 @@ use Throwable;
 trait Runner
 {
     /**
+     * @var Bootstrap
+     */
+    private $boots = null;
+
+    /**
+     * @return Bootstrap
+     */
+    final protected function bootstrap() : Bootstrap
+    {
+        return $this->boots;
+    }
+
+    /**
      * @param Bootstrap $boot
      * @return mixed
      */
     final public function execute(Bootstrap $boot)
     {
+        $this->boots = $boot;
+
         yield defer(function ($e = null) use ($boot) {
             if ($e instanceof Throwable) {
                 logger('console')->error('Application crashed', ['ec' => get_class($e), 'em' => $e->getMessage()]);
@@ -34,6 +49,6 @@ trait Runner
 
         logger('console')->info('Application prepared to run');
 
-        return yield method_exists($this, 'dispatching') ? $this->dispatching($boot) : $this->firing($boot->app());
+        return yield $this->firing($boot->app());
     }
 }
