@@ -37,7 +37,7 @@ class BootstrapTest extends TestCase
             new PrioritizedCom('c8', $writer),
         ];
 
-        $this->booting(new App, ...$mods);
+        $this->booting(new App(), ...$mods);
 
         $this->assertEquals('c5,c2,c3,c4,c4.1,c8,c7,c1,c6', implode(',', $buffer));
     }

@@ -8,6 +8,7 @@
 
 namespace Carno\Console\Contracts;
 
+use Carno\Config\Config;
 use Carno\Console\Boot\Waited;
 use Carno\Console\Input;
 use Carno\Coroutine\Context;
@@ -18,6 +19,11 @@ interface Application
      * @return Context
      */
     public function ctx() : Context;
+
+    /**
+     * @return Config
+     */
+    public function conf() : Config;
 
     /**
      * @return string

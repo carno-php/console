@@ -9,16 +9,15 @@
 namespace Carno\Console;
 
 use Carno\Console\Chips\CMDKit;
+use Carno\Console\Chips\Dumps;
 use Carno\Container\DI;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
 class Initializer
 {
     use CMDKit;
+    use Dumps;
 
     /**
      * @var Application
@@ -37,7 +36,7 @@ class Initializer
     {
         DI::set(Bootstrap::class, $this->boot = DI::object(Bootstrap::class));
 
-        ($this->app = new Application)
+        ($this->app = new Application())
             ->setCatchExceptions(false)
         ;
     }
@@ -91,8 +90,17 @@ class Initializer
         try {
             $this->app->run();
         } catch (Throwable $e) {
-            $this->failure($e);
+            $this->failure($e, 1);
         }
+    }
+
+    /**
+     * @param string $named
+     * @return Proxy
+     */
+    public function proxy(string $named) : Proxy
+    {
+        return $this->app->get($named);
     }
 
     /**
@@ -103,7 +111,7 @@ class Initializer
         foreach ($classes as $class) {
             $this->app->add(
                 $this->setCommandPTS(
-                    (new Proxy)->setBootstrap($this->boot)->setCommand($class),
+                    (new Proxy())->setBootstrap($this->boot)->setCommand($class),
                     $class,
                     ['app', 'name', 'help', 'description']
                 )
@@ -117,18 +125,5 @@ class Initializer
     private function provides() : array
     {
         return (defined('CWD') && is_file($cf = CWD . '/commands.php')) ? (array) include $cf : [];
-    }
-
-    /**
-     * @param Throwable $e
-     */
-    private function failure(Throwable $e) : void
-    {
-        $styled = (new SymfonyStyle(new ArgvInput, new ConsoleOutput));
-        $styled->title(get_class($e));
-        $styled->error($e->getMessage());
-        $styled->note(sprintf('%s:%d', $e->getFile(), $e->getLine()));
-        $styled->text(['TRACES', $e->getTraceAsString()]);
-        exit(1);
     }
 }

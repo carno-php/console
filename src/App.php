@@ -8,6 +8,8 @@
 
 namespace Carno\Console;
 
+use function Carno\Config\conf;
+use Carno\Config\Config;
 use Carno\Console\Boot\Waited;
 use Carno\Console\Contracts\Application;
 use Carno\Coroutine\Context;
@@ -40,7 +42,15 @@ class App implements Application
      */
     public function ctx() : Context
     {
-        return $this->ctx ?? $this->ctx = new Context;
+        return $this->ctx ?? $this->ctx = new Context();
+    }
+
+    /**
+     * @return Config
+     */
+    public function conf() : Config
+    {
+        return conf();
     }
 
     /**
@@ -80,7 +90,7 @@ class App implements Application
      */
     public function starting() : Waited
     {
-        return $this->starting ?? $this->starting = new Waited;
+        return $this->starting ?? $this->starting = new Waited();
     }
 
     /**
@@ -88,6 +98,6 @@ class App implements Application
      */
     public function stopping() : Waited
     {
-        return $this->stopping ?? $this->stopping = new Waited;
+        return $this->stopping ?? $this->stopping = new Waited();
     }
 }

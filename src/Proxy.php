@@ -8,6 +8,7 @@
 
 namespace Carno\Console;
 
+use Carno\Console\Chips\Dumps;
 use Carno\Console\Chips\EVKit;
 use Carno\Console\Contracts\Programme;
 use Carno\Container\DI;
@@ -20,6 +21,7 @@ use Throwable;
 class Proxy extends Command
 {
     use EVKit;
+    use Dumps;
 
     /**
      * @var Bootstrap
@@ -77,19 +79,25 @@ class Proxy extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return int
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->bootstrap->app()->inputs($input);
         $this->bootstrap->kernel();
 
+        $ex = 0;
+
         async(function () {
             yield $this->getCommand()->execute($this->bootstrap);
-        })->catch(function (Throwable $e) {
-            dump('APP EXCEPTION', $e);
+        })->catch(function (Throwable $e) use (&$ex) {
+            $ex = 1;
+            $this->failure($e);
             $this->exits();
         });
 
         $this->loops();
+
+        return $ex;
     }
 }
