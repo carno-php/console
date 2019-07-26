@@ -5,7 +5,7 @@
     "carno-php/container": "^1.0",
     "carno-php/coroutine": "^1.0",
     "carno-php/promise": "^1.0",
-    "carno-php/config": "^1.0",
+    "carno-php/config": "~2.0",
     "carno-php/log-slim": "^1.0",
     "symfony/var-dumper": "~3.3|~4.0",
     "symfony/console": "~3.3|~4.0"
